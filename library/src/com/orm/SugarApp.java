@@ -29,6 +29,9 @@ public class SugarApp extends android.app.Application{
     public static SugarApp getSugarContext(){
         return sugarContext;
     }
+    public Database getDatabase() {
+    	return database;
+    }
 
 
 }
