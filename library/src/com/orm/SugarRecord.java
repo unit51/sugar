@@ -148,7 +148,7 @@ public class SugarRecord<T> {
         return toRet;
     }
 
-    void inflate(Cursor cursor) {
+    public void inflate(Cursor cursor) {
         Map<Field, Long> entities = new HashMap<Field, Long>();
         List<Field> columns = getTableFields();
         for (Field field : columns) {
