@@ -7,7 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 public class Database {
     private SugarDb sugarDb;
     private SQLiteDatabase sqLiteDatabase;
-
+    private int activeDatabaseCount = 0;
+    
     public Database(Context context){
         this.sugarDb  = new SugarDb(context);
     }
@@ -15,14 +16,20 @@ public class Database {
 
   public SQLiteDatabase openDB() {
     this.sqLiteDatabase = this.sugarDb.getWritableDatabase();
+    activeDatabaseCount++;
 
     return this.sqLiteDatabase;
   }
 
   public void closeDB() {
-    if (this.sqLiteDatabase != null) {
-      this.sqLiteDatabase.close();
-      this.sqLiteDatabase = null;
+    
+    activeDatabaseCount--;
+    if (activeDatabaseCount == 0) {
+    	if (this.sqLiteDatabase != null) {
+    		if (sqLiteDatabase.isOpen()) {
+    			sqLiteDatabase.close();
+            }
+    	}
     }
   }
 }

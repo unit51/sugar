@@ -3,6 +3,7 @@ package com.orm;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
@@ -65,8 +66,19 @@ public class SugarRecord<T> {
                                     : "0");
                 } else {
                     if (!"id".equalsIgnoreCase(column.getName())) {
-                        values.put(StringUtil.toSQLName(column.getName()),
-                                String.valueOf(column.get(this)));
+                    	
+                    	if (column.getType().getName().equals("java.sql.Timestamp")) {
+							Timestamp timestamp = (Timestamp) column.get(this);
+							if(timestamp != null) {
+								values.put(StringUtil.toSQLName(column.getName()),
+										String.valueOf(timestamp.getTime()));
+							}
+							
+						} else {
+							values.put(StringUtil.toSQLName(column.getName()),
+									String.valueOf(column.get(this)));
+						}
+                        
                     }
                 }
 
@@ -149,6 +161,7 @@ public class SugarRecord<T> {
     }
 
     public void inflate(Cursor cursor) {
+
         Map<Field, Long> entities = new HashMap<Field, Long>();
         List<Field> columns = getTableFields();
         for (Field field : columns) {
@@ -187,6 +200,7 @@ public class SugarRecord<T> {
                     field.setShort(this,
                             cursor.getShort(cursor.getColumnIndex(colName)));
                 } else if (typeString.equals("java.sql.Timestamp")) {
+         
                     long l = cursor.getLong(cursor.getColumnIndex(colName));
                     field.set(this, new Timestamp(l));
                 } else if (field.getType().getSuperclass() == SugarRecord.class) {
